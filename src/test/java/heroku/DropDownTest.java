@@ -55,4 +55,17 @@ public class DropDownTest {
 //        Assert.assertTrue(driver.findElement(By.xpath("//option[.='Grape']")).isSelected());
 
     }
+
+    @Test
+    void verifyTextFieldDisabled() throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/dynamic_controls");
+        Assert.assertFalse(driver.findElement(By.xpath("//form[@id='input-example']/input")).isEnabled());
+        // Click on Enable button
+        driver.findElement(By.xpath("//form[@id='input-example']/button")).click();
+        Thread.sleep(5000);
+        Assert.assertTrue(driver.findElement(By.xpath("//form[@id='input-example']/input")).isEnabled());
+
+
+    }
 }
