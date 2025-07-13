@@ -34,4 +34,17 @@ public class CheckBoxesTest {
         driver.quit();
 
     }
+
+    @Test
+    void ableUncheckAllTextBoxes(){
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://moatazeldebsy.github.io/test-automation-practices/#/checkboxes");
+        // Uncheck all checkboxes
+        driver.findElement(By.xpath("//button[@data-test='uncheck-all-button']")).click();
+        // Verify all checkboxes are unchecked
+        Assert.assertFalse(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox1']")).isSelected());
+        Assert.assertFalse(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox2']")).isSelected());
+        Assert.assertFalse(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox3']")).isSelected());
+        driver.quit();
+    }
 }
