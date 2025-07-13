@@ -47,4 +47,17 @@ public class CheckBoxesTest {
         Assert.assertFalse(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox3']")).isSelected());
         driver.quit();
     }
+
+    @Test
+    void ableCheckAllCheckBoxes(){
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://moatazeldebsy.github.io/test-automation-practices/#/checkboxes");
+        // Check all checkboxes
+        driver.findElement(By.xpath("//button[@data-test='check-all-button']")).click();
+        // Verify all checkboxes are checked
+        Assert.assertTrue(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox1']")).isSelected());
+        Assert.assertTrue(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox2']")).isSelected());
+        Assert.assertTrue(driver.findElement(By.xpath("//input[@data-test='checkbox-checkbox3']")).isSelected());
+        driver.quit();
+    }
 }
