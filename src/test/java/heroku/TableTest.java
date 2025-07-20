@@ -56,8 +56,12 @@ public class TableTest {
                     double due = Double.parseDouble(row.findElement(By.xpath(".//td[4]")).getText().replace("$", ""));
                     personList.add(new Person(firstName, lastName, due));
                 });
-        String maxDuePersonFullName = personList.stream().max(Comparator.comparing(Person::getDue)).get().getFullName();
-        Assert.assertEquals(maxDuePersonFullName, "Jason Doe");
+        double maxDue = personList.stream().max(Comparator.comparing(Person::getDue)).get().getDue();
+        List<String> ListPersonHaveMaxDue = personList.stream()
+                        .filter(person -> person.getDue() == maxDue)
+                                .map(Person::getFullName)
+                                        .toList();
+        Assert.assertEquals(ListPersonHaveMaxDue, List.of("Jason Doe"));
         driver.quit();
     }
 }
