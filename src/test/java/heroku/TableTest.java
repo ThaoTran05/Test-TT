@@ -64,4 +64,27 @@ public class TableTest {
         Assert.assertEquals(ListPersonHaveMaxDue, List.of("Jason Doe"));
         driver.quit();
     }
+
+    @Test
+    void TC07(){
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/tables");
+
+        List<Person> personList = new ArrayList<>();
+
+        driver.findElements(By.xpath("//table[@id='table1']/tbody/tr"))
+                .forEach(row -> {
+                    String lastName = row.findElement(By.xpath(".//td[1]")).getText();
+                    String firstName = row.findElement(By.xpath(".//td[2]")).getText();
+                    double due = Double.parseDouble(row.findElement(By.xpath(".//td[4]")).getText().replace("$", ""));
+                    personList.add(new Person(firstName, lastName, due));
+                });
+        double minDue = personList.stream().min(Comparator.comparing(Person::getDue)).get().getDue();
+        List<String> ListPersonHaveMinDue = personList.stream()
+                .filter(person -> person.getDue() == minDue)
+                .map(Person::getFullName)
+                .toList();
+        Assert.assertEquals(ListPersonHaveMinDue, List.of("John Smith", "Tim Conway"));
+        driver.quit();
+    }
 }
