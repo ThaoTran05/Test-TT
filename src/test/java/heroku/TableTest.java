@@ -1,11 +1,17 @@
 package heroku;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,12 +26,26 @@ public class TableTest {
      * Focus on table 1
      * The person who has largest due is "Doe Jacson"
      */
+    WebDriver driver;
+    List<Person> personList;
+
+    @BeforeClass
+    void setUp() {
+        driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/tables");
+
+        personList = new ArrayList<>();
+        driver.findElements(By.xpath("//table[@id='table1']/tbody/tr"))
+                .forEach(row -> {
+                    String lastName = row.findElement(By.xpath(".//td[1]")).getText();
+                    String firstName = row.findElement(By.xpath(".//td[2]")).getText();
+                    double due = Double.parseDouble(row.findElement(By.xpath(".//td[4]")).getText().replace("$", ""));
+                    personList.add(new Person(firstName, lastName, due));
+                });
+    }
 
     @Test
     void TC05(){
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/tables");
-
         List<Double> dueList = driver
                 .findElements(By.xpath("//table[@id='table1']/tbody/tr/td[4]"))
                 .stream()
@@ -39,52 +59,51 @@ public class TableTest {
         String firstName = driver.findElement(By.xpath(String.format("//table[@id='table1']/tbody/tr[%d]/td[2]", rowIndex))).getText();
 
         Assert.assertEquals(String.format("%s %s", firstName, lastName), "Jason Doe");
-        driver.quit();
+
     }
 
     @Test
     void TC06(){
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/tables");
-
-        List<Person> personList = new ArrayList<>();
-
-        driver.findElements(By.xpath("//table[@id='table1']/tbody/tr"))
-                .forEach(row -> {
-                    String lastName = row.findElement(By.xpath(".//td[1]")).getText();
-                    String firstName = row.findElement(By.xpath(".//td[2]")).getText();
-                    double due = Double.parseDouble(row.findElement(By.xpath(".//td[4]")).getText().replace("$", ""));
-                    personList.add(new Person(firstName, lastName, due));
-                });
+// todo: Find the person with the maximum due amount
         double maxDue = personList.stream().max(Comparator.comparing(Person::getDue)).get().getDue();
         List<String> ListPersonHaveMaxDue = personList.stream()
                         .filter(person -> person.getDue() == maxDue)
                                 .map(Person::getFullName)
                                         .toList();
         Assert.assertEquals(ListPersonHaveMaxDue, List.of("Jason Doe"));
-        driver.quit();
+
     }
 
     @Test
     void TC07(){
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/tables");
-
-        List<Person> personList = new ArrayList<>();
-
-        driver.findElements(By.xpath("//table[@id='table1']/tbody/tr"))
-                .forEach(row -> {
-                    String lastName = row.findElement(By.xpath(".//td[1]")).getText();
-                    String firstName = row.findElement(By.xpath(".//td[2]")).getText();
-                    double due = Double.parseDouble(row.findElement(By.xpath(".//td[4]")).getText().replace("$", ""));
-                    personList.add(new Person(firstName, lastName, due));
-                });
+// todo: Find the person with the minimum due amount
         double minDue = personList.stream().min(Comparator.comparing(Person::getDue)).get().getDue();
         List<String> ListPersonHaveMinDue = personList.stream()
                 .filter(person -> person.getDue() == minDue)
                 .map(Person::getFullName)
                 .toList();
         Assert.assertEquals(ListPersonHaveMinDue, List.of("John Smith", "Tim Conway"));
-        driver.quit();
+
+    }
+
+    @AfterMethod(alwaysRun = true)
+    void captureScreenshot(ITestResult testResult) {
+        // Capture screenshot if the test failed
+        if(!testResult.isSuccess()){
+            TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
+            File srcFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
+            File destFile = new File(String.format("target/screenshot-%s-%s.png", testResult.getName(), System.currentTimeMillis()));
+            try {
+                FileUtils.copyFile(srcFile, destFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    @AfterClass(alwaysRun = true)
+    void tearDown() {
+            driver.quit();
     }
 }
