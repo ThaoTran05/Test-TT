@@ -12,7 +12,7 @@ public class JavaScriptAlertTest {
     void verifyClickJSAlert(){
         WebDriver driver = new ChromeDriver();
         driver.get("https://the-internet.herokuapp.com/javascript_alerts");
-        driver.findElement(By.xpath("//button[text()='Click for JS Alert']")).click();
+        driver.findElement(By.xpath("//button[.='Click for JS Alert']")).click();
 
         String alertText = driver.switchTo().alert().getText();
         System.out.println("Alert text: " + alertText);
