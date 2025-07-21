@@ -63,5 +63,18 @@ public class MouseActionsTest {
         driver.quit();
     }
 
+    @Test
+    void infiniteScrollTest() throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/infinite_scroll");
 
+       Actions action = new Actions(driver);
+        // Scroll down to the bottom of the page (5 times)
+        for (int i = 0; i < 5; i++) {
+            action.scrollByAmount(0, 100).perform();
+            Thread.sleep(1000); // Wait for new content to load
+        }
+
+        driver.quit();
+    }
 }
