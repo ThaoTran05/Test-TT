@@ -24,4 +24,44 @@ public class MouseActionsTest {
 
         driver.quit();
     }
+
+    @Test
+    void dragAndDropTest(){
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/drag_and_drop");
+
+        Actions action = new Actions(driver);
+        WebElement source = driver.findElement(By.id("column-a"));
+        WebElement target = driver.findElement(By.id("column-b"));
+
+        action.dragAndDrop(source, target).perform();
+
+        // Verify the text has been swapped
+        Assert.assertTrue(source.getText().contains("B"));
+        Assert.assertTrue(target.getText().contains("A"));
+
+        driver.quit();
+    }
+
+    @Test
+    void horizontalSliderTest(){
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/horizontal_slider");
+
+        Actions action = new Actions(driver);
+        WebElement slider = driver.findElement(By.xpath("//input[@type='range']"));
+
+        System.out.println(slider.getSize().getWidth());
+
+        // Move the slider to the right by 50 pixels
+        action.clickAndHold(slider).moveByOffset(slider.getSize().getWidth(), 0).release().perform();
+
+        // Verify the value of the slider
+        String value = slider.getAttribute("value");
+        Assert.assertEquals(value, "5"); // Adjust based on the slider's range
+
+        driver.quit();
+    }
+
+
 }
