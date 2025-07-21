@@ -77,4 +77,26 @@ public class MouseActionsTest {
 
         driver.quit();
     }
+
+    @Test
+    void contextClickTest() {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/context_menu");
+
+        Actions action = new Actions(driver);
+        WebElement box = driver.findElement(By.id("hot-spot"));
+
+        // Perform right-click (context click) on the box
+        action.contextClick(box).perform();
+
+        // Verify the alert text
+        String alertText = driver.switchTo().alert().getText();
+        System.out.println("Alert text: " + alertText);
+        Assert.assertTrue(alertText.contains("You selected a context menu"));
+
+        // Accept the alert
+        driver.switchTo().alert().accept();
+
+        driver.quit();
+    }
 }
