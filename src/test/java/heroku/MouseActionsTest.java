@@ -1,6 +1,7 @@
 package heroku;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -96,6 +97,23 @@ public class MouseActionsTest {
 
         // Accept the alert
         driver.switchTo().alert().accept();
+
+        driver.quit();
+    }
+
+    @Test
+    void keyPressTest() {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/key_presses");
+
+        Actions action = new Actions(driver);
+        // Press the "A" key
+        //action.sendKeys("A").perform();
+        action.sendKeys(Keys.ESCAPE).perform();
+
+        // Verify the result text
+        String resultText = driver.findElement(By.id("result")).getText();
+        Assert.assertTrue(resultText.contains("You entered: ESCAPE"));
 
         driver.quit();
     }
