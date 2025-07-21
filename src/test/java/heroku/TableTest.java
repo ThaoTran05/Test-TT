@@ -19,33 +19,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TableTest {
-    /**
-     * TC05: Web Table: Validate largest due person from a table
-     * Open browser
-     * Navigate to https://the-internet.herokuapp.com/tables
-     * Focus on table 1
-     * The person who has largest due is "Doe Jacson"
-     */
     WebDriver driver;
     List<Person> personList;
 
     @BeforeClass
-    void setUp() {
+    void setUp(){
         driver = new ChromeDriver();
         driver.get("https://the-internet.herokuapp.com/tables");
-
         personList = new ArrayList<>();
         driver.findElements(By.xpath("//table[@id='table1']/tbody/tr"))
                 .forEach(row -> {
-                    String lastName = row.findElement(By.xpath(".//td[1]")).getText();
-                    String firstName = row.findElement(By.xpath(".//td[2]")).getText();
-                    double due = Double.parseDouble(row.findElement(By.xpath(".//td[4]")).getText().replace("$", ""));
-                    personList.add(new Person(firstName, lastName, due));
+                    String lastName = row.findElement(By.xpath("./td[1]")).getText();
+                    String firstName = row.findElement(By.xpath("./td[2]")).getText();
+                    double due = Double.parseDouble(row.findElement(By.xpath("./td[4]")).getText().replace("$", ""));
+                    personList.add(new Person( firstName,lastName, due));
                 });
     }
 
     @Test
-    void TC05(){
+    void tc05(){
         List<Double> dueList = driver
                 .findElements(By.xpath("//table[@id='table1']/tbody/tr/td[4]"))
                 .stream()
@@ -59,31 +51,28 @@ public class TableTest {
         String firstName = driver.findElement(By.xpath(String.format("//table[@id='table1']/tbody/tr[%d]/td[2]", rowIndex))).getText();
 
         Assert.assertEquals(String.format("%s %s", firstName, lastName), "Jason Doe");
-
     }
 
     @Test
-    void TC06(){
-// todo: Find the person with the maximum due amount
+    void tc06(){
         double maxDue = personList.stream().max(Comparator.comparing(Person::getDue)).get().getDue();
-        List<String> ListPersonHaveMaxDue = personList.stream()
-                        .filter(person -> person.getDue() == maxDue)
-                                .map(Person::getFullName)
-                                        .toList();
-        Assert.assertEquals(ListPersonHaveMaxDue, List.of("Jason Doe"));
-
-    }
-
-    @Test
-    void TC07(){
-// todo: Find the person with the minimum due amount
-        double minDue = personList.stream().min(Comparator.comparing(Person::getDue)).get().getDue();
-        List<String> ListPersonHaveMinDue = personList.stream()
-                .filter(person -> person.getDue() == minDue)
+        List<String> listPersonHaveMaxDue  = personList.stream()
+                .filter(p -> p.getDue() == maxDue)
                 .map(Person::getFullName)
                 .toList();
-        Assert.assertEquals(ListPersonHaveMinDue, List.of("John Smith", "Tim Conway"));
 
+        Assert.assertEquals(listPersonHaveMaxDue, List.of("Jason Doe"));
+    }
+
+    @Test
+    void tc07(){
+        double minDue = personList.stream().min(Comparator.comparing(Person::getDue)).get().getDue();
+        List<String> listPersonHaveMinDue  = personList.stream()
+                .filter(p -> p.getDue() == minDue)
+                .map(Person::getFullName)
+                .toList();
+
+        Assert.assertEquals(listPersonHaveMinDue, List.of("John Smith","Tim Conway"));
     }
 
     @AfterMethod(alwaysRun = true)
@@ -91,8 +80,8 @@ public class TableTest {
         if(!testResult.isSuccess()){
             TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
             File srcFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-            String timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss"));
-            File destFile = new File(String.format("target/screenshot-%s-%s.png", testResult.getName(), timestamp));
+           // String timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss"));
+            File destFile = new File(String.format("target/screenshot-%s-%s.png", testResult.getName(), System.currentTimeMillis()));
             try {
                 FileUtils.copyFile(srcFile, destFile);
             } catch (IOException e) {
@@ -102,7 +91,7 @@ public class TableTest {
     }
 
     @AfterClass(alwaysRun = true)
-    void tearDown() {
-            driver.quit();
+    void tearDown(){
+        driver.quit();
     }
 }
