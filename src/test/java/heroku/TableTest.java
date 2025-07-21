@@ -87,19 +87,18 @@ public class TableTest {
     }
 
     @AfterMethod(alwaysRun = true)
-    void captureScreenshot(ITestResult testResult) {
-        // Capture screenshot if the test failed
+    void captureScreenshot(ITestResult testResult){
         if(!testResult.isSuccess()){
             TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
             File srcFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
-            File destFile = new File(String.format("target/screenshot-%s-%s.png", testResult.getName(), System.currentTimeMillis()));
+            String timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy'-'MM'-'dd'T'HH':'mm':'ss"));
+            File destFile = new File(String.format("target/screenshot-%s-%s.png", testResult.getName(), timestamp));
             try {
                 FileUtils.copyFile(srcFile, destFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     @AfterClass(alwaysRun = true)
