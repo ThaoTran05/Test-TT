@@ -42,7 +42,7 @@
                 <version>3.5.3</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>${testplan}</suiteXmlFile>
+                        <suiteXmlFile>login-testplan.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
