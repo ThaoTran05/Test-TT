@@ -1,14 +1,20 @@
 package utils;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 
 // selenium owner methods
@@ -23,7 +29,9 @@ public class Browser {
     public static void openBrowser(String browser) {
         switch (browser.toLowerCase()) {
             case "chrome":
-                driver = new ChromeDriver();
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--headless=new");
+                driver = new ChromeDriver(options);
                 break;
             case "firefox":
                 driver = new FirefoxDriver();
@@ -73,6 +81,17 @@ public class Browser {
     }
     public static String getCurrentUrl(){
         return driver.getCurrentUrl();
+    }
+
+    public static void captureScreenshot(String fileName) {
+        TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
+        File srcFile = takesScreenshot.getScreenshotAs(OutputType.FILE);
+        File destFile = new File(String.format("target/screenshot-%s-%s.png", fileName, System.currentTimeMillis()));
+        try {
+            FileUtils.copyFile(srcFile, destFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

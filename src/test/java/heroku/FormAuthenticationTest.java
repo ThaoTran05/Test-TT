@@ -4,7 +4,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import pages.heroku.FormAuthenticationPage;
+
+import static utils.Browser.*;
 
 public class FormAuthenticationTest {
     /**
@@ -16,18 +22,27 @@ public class FormAuthenticationTest {
      * Click on Login button
      * And the home page is appear
      */
+    FormAuthenticationPage formAuthenticationPage;
+    @BeforeMethod
+    void setup() {
+        openBrowser("chrome");
+        formAuthenticationPage = new FormAuthenticationPage();
+    }
+
+    @Parameters({"browser"})
     @Test
-    void TC01(){
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/login");
-        // Fill in username and password
-        driver.findElement(By.id("username")).sendKeys("tomsmith");
-        driver.findElement(By.id("password")).sendKeys("SuperSecretPassword!");
-        // Click on Login button
-        driver.findElement(By.xpath("//button[@type='submit']")).click();
-        Assert.assertEquals(driver.getCurrentUrl(), "https://the-internet.herokuapp.com/secure");
-        Assert.assertTrue(driver.findElement(By.tagName("h4")).getText().contains("Welcome to the Secure Area. When you are done click logout below."));
-        driver.quit();
+    void TC01(String browser) {
+        formAuthenticationPage.open();
+        formAuthenticationPage.login("tomsmith", "SuperSecretPassword!");
+
+        Assert.assertEquals(getCurrentUrl(), "https://the-internet.herokuapp.com/secure");
+        Assert.assertTrue(formAuthenticationPage.getWelcomeMessage().contains("Welcome to the Secure Area. When you are done click logout below."));
+
+    }
+
+    @AfterMethod
+    void tearDown() {
+        quit();
     }
 
 }
